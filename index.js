@@ -37,18 +37,14 @@ async function refreshAccessToken() {
     );
     accessToken = response.data.access_token;
     tokenExpiry = Date.now() + (response.data.expires_in - 60) * 1000;
-    console.log('토큰 자동 갱신 완료!');
   } catch (e) {
-    console.log('토큰 갱신 실패:', e.message);
     accessToken = null;
   }
 }
 
 async function ensureValidToken() {
   if (!accessToken || !refreshToken) return false;
-  if (Date.now() >= tokenExpiry) {
-    await refreshAccessToken();
-  }
+  if (Date.now() >= tokenExpiry) await refreshAccessToken();
   return !!accessToken;
 }
 
@@ -77,98 +73,142 @@ app.get('/callback', async (req, res) => {
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   if (!accessToken) {
-    return res.send(`
-      <html><head><meta charset="utf-8"></head><body>
-      <h1>📻 CBS 라디오 플레이리스트 생성기</h1>
-      <a href="/login">스포티파이 로그인</a>
-      </body></html>
-    `);
+    return res.send(`<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio Playlist</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .login-box { text-align: center; padding: 48px; }
+  .logo { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #999; margin-bottom: 32px; }
+  h1 { font-size: 28px; font-weight: 300; color: #1a1a1a; margin-bottom: 8px; letter-spacing: -0.5px; }
+  p { color: #999; font-size: 14px; margin-bottom: 40px; }
+  .btn { display: inline-block; padding: 14px 36px; background: #1a1a1a; color: white; text-decoration: none; border-radius: 100px; font-size: 14px; letter-spacing: 0.5px; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.75; }
+</style></head>
+<body>
+  <div class="login-box">
+    <div class="logo">Radio Playlist</div>
+    <h1>나만의 라디오 플레이리스트</h1>
+    <p>CBS 선곡표와 AI 추천으로 스포티파이 플리를 만들어요</p>
+    <a href="/login" class="btn">Spotify로 시작하기</a>
+  </div>
+</body></html>`);
   }
 
   const programOptions = Object.entries(PROGRAMS)
     .map(([code, name]) => `<option value="${code}">${name}</option>`)
     .join('');
 
-  res.send(`
-    <html><head><meta charset="utf-8">
-    <style>
-      body { font-family: sans-serif; padding: 20px; }
-      .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-      .tab { padding: 8px 20px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5; }
-      .tab.active { background: #1db954; color: white; border-color: #1db954; }
-      .tab-content { display: none; }
-      .tab-content.active { display: block; }
-      textarea { width: 500px; height: 200px; font-family: monospace; font-size: 13px; }
-      input[type=text], select { width: 300px; padding: 4px; }
-      button { padding: 8px 20px; background: #1db954; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-    </style>
-    </head><body>
-    <h1>📻 라디오 플레이리스트 생성기</h1>
-    <p style="color:green">✅ 스포티파이 연결됨 (자동 갱신 활성화)</p>
+  res.send(`<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio Playlist</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
+  header { padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; background: white; }
+  .logo { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: #999; }
+  .status { font-size: 12px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
+  .status::before { content: ''; width: 6px; height: 6px; background: #4caf50; border-radius: 50%; display: inline-block; }
+  main { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
+  .tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid #eee; }
+  .tab { padding: 12px 24px; font-size: 14px; cursor: pointer; color: #999; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .field { margin-bottom: 24px; }
+  label { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 8px; }
+  select, input[type=text], input[type=date] { width: 100%; padding: 12px 16px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 14px; background: white; color: #1a1a1a; outline: none; transition: border-color 0.2s; }
+  select:focus, input:focus { border-color: #1a1a1a; }
+  textarea { width: 100%; padding: 12px 16px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: monospace; background: white; color: #1a1a1a; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
+  textarea:focus { border-color: #1a1a1a; }
+  .hint { font-size: 12px; color: #bbb; margin-top: 6px; }
+  .btn { width: 100%; padding: 14px; background: #1a1a1a; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s; margin-top: 8px; }
+  .btn:hover { opacity: 0.75; }
+  #aiResult { margin-top: 24px; padding: 20px; background: white; border-radius: 8px; border: 1px solid #e8e8e8; font-size: 14px; line-height: 1.8; display: none; }
+  #aiResult.show { display: block; }
+</style></head>
+<body>
+<header>
+  <div class="logo">Radio Playlist</div>
+  <div class="status">Spotify 연결됨</div>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('cbs', this)">CBS 선곡표</button>
+    <button class="tab" onclick="showTab('ai', this)">AI 추천</button>
+  </div>
 
-    <div class="tabs">
-      <div class="tab active" onclick="showTab('cbs')">📻 CBS 선곡표</div>
-      <div class="tab" onclick="showTab('ai')">🎵 AI 추천 플리</div>
+  <div id="cbs" class="tab-content active">
+    <form action="/create" method="get">
+      <div class="field">
+        <label>프로그램</label>
+        <select name="program">${programOptions}</select>
+      </div>
+      <div class="field">
+        <label>시작 날짜</label>
+        <input type="date" name="startDate" required>
+      </div>
+      <div class="field">
+        <label>종료 날짜</label>
+        <input type="date" name="endDate" required>
+      </div>
+      <div class="field">
+        <label>플레이리스트 이름</label>
+        <input type="text" name="name" placeholder="이름을 입력하세요">
+      </div>
+      <button type="submit" class="btn">플레이리스트 만들기</button>
+    </form>
+  </div>
+
+  <div id="ai" class="tab-content">
+    <div class="field">
+      <label>곡 목록</label>
+      <textarea id="trackList" placeholder="곡명 - 아티스트 형식으로 한 줄씩 입력하세요&#10;&#10;예시:&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck&#10;Autumn Leaves - Bill Evans"></textarea>
+      <div class="hint">Claude가 추천한 곡 목록을 붙여넣으세요</div>
     </div>
-
-    <div id="cbs" class="tab-content active">
-      <form action="/create" method="get">
-        <label>프로그램 선택:</label><br>
-        <select name="program">${programOptions}</select><br><br>
-        <label>시작 날짜:</label><br>
-        <input type="date" name="startDate" required><br><br>
-        <label>종료 날짜:</label><br>
-        <input type="date" name="endDate" required><br><br>
-        <label>플레이리스트 이름:</label><br>
-        <input type="text" name="name" style="width:300px"><br><br>
-        <button type="submit">플레이리스트 생성</button>
-      </form>
+    <div class="field">
+      <label>플레이리스트 이름</label>
+      <input type="text" id="aiPlaylistName" placeholder="이름을 입력하세요">
     </div>
+    <button class="btn" onclick="createAiPlaylist()">플레이리스트 만들기</button>
+    <div id="aiResult"></div>
+  </div>
+</main>
 
-    <div id="ai" class="tab-content">
-      <p>Claude가 추천한 곡 목록을 아래에 붙여넣으세요.<br>
-      <small>형식: 한 줄에 하나씩 <b>곡명 - 아티스트</b> 또는 <b>아티스트 - 곡명</b></small></p>
-      <textarea id="trackList" placeholder="예시:&#10;Becaus - Dave Brubeck&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck"></textarea><br><br>
-      <label>플레이리스트 이름:</label><br>
-      <input type="text" id="aiPlaylistName" style="width:300px" placeholder="플레이리스트 이름 입력"><br><br>
-      <button onclick="createAiPlaylist()">플레이리스트 생성</button>
-      <div id="aiResult" style="margin-top:20px"></div>
-    </div>
+<script>
+  function showTab(tab, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    el.classList.add('active');
+  }
 
-    <script>
-      function showTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById(tab).classList.add('active');
-        event.target.classList.add('active');
-      }
+  async function createAiPlaylist() {
+    const text = document.getElementById('trackList').value.trim();
+    const name = document.getElementById('aiPlaylistName').value.trim() || 'AI 추천 플리';
+    if (!text) { alert('곡 목록을 입력해주세요'); return; }
 
-      async function createAiPlaylist() {
-        const text = document.getElementById('trackList').value.trim();
-        const name = document.getElementById('aiPlaylistName').value.trim() || 'AI 추천 플리';
-        if (!text) { alert('곡 목록을 입력해주세요!'); return; }
+    const result = document.getElementById('aiResult');
+    result.className = 'show';
+    result.innerHTML = '⏳ 플레이리스트 생성 중...';
 
-        document.getElementById('aiResult').innerHTML = '⏳ 플레이리스트 생성 중...';
+    const res = await fetch('/create-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trackList: text, name })
+    });
+    const data = await res.json();
 
-        const response = await fetch('/create-ai', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trackList: text, name })
-        });
-        const result = await response.json();
-
-        if (result.error) {
-          document.getElementById('aiResult').innerHTML = '❌ 오류: ' + result.error;
-        } else {
-          document.getElementById('aiResult').innerHTML =
-            '✅ 완료! 플레이리스트 <b>' + result.name + '</b> 생성됐어요!<br>' +
-            '추가된 곡: ' + result.added + '곡<br>' +
-            (result.notFound.length > 0 ? '못 찾은 곡:<br>' + result.notFound.join('<br>') : '');
-        }
-      }
-    </script>
-    </body></html>
-  `);
+    if (data.error) {
+      result.innerHTML = '❌ 오류: ' + data.error;
+    } else {
+      result.innerHTML = '✅ <b>' + data.name + '</b> 생성 완료!<br>추가된 곡: ' + data.added + '곡' +
+        (data.notFound.length > 0 ? '<br><br>못 찾은 곡:<br>' + data.notFound.join('<br>') : '');
+    }
+  }
+</script>
+</body></html>`);
 });
 
 function getDateRange(startDate, endDate) {
@@ -222,7 +262,6 @@ async function searchTrack(title, artist) {
   } catch(e) {
     if (e.response && e.response.status === 429) {
       const retryAfter = (e.response.headers['retry-after'] || 3) * 1000;
-      console.log(`Rate limit! ${retryAfter/1000}초 후 재시도...`);
       await sleep(retryAfter);
       return searchTrack(title, artist);
     }
@@ -230,17 +269,12 @@ async function searchTrack(title, artist) {
   }
 }
 
-// AI 추천 플리 생성 엔드포인트
 app.post('/create-ai', async (req, res) => {
   const { trackList, name } = req.body;
-
   const valid = await ensureValidToken();
-  if (!valid) {
-    return res.json({ error: '로그인이 필요해요' });
-  }
+  if (!valid) return res.json({ error: '로그인이 필요해요' });
 
   try {
-    // 곡 목록 파싱 (곡명 - 아티스트 또는 아티스트 - 곡명)
     const lines = trackList.split('\n').map(l => l.trim()).filter(l => l && l.includes('-'));
     const tracks = lines.map(line => {
       const parts = line.split('-').map(p => p.trim());
@@ -271,7 +305,6 @@ app.post('/create-ai', async (req, res) => {
     }
 
     res.json({ name, added: uris.length, notFound });
-
   } catch(e) {
     res.json({ error: e.message });
   }
@@ -285,15 +318,28 @@ app.get('/create', async (req, res) => {
 
   const valid = await ensureValidToken();
   if (!valid) {
-    return res.send(`<html><head><meta charset="utf-8"></head><body><p>로그인이 필요해요. <a href="/login">스포티파이 로그인</a></p></body></html>`);
+    return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><p>로그인이 필요해요. <a href="/login">로그인</a></p></body></html>`);
   }
 
   try {
-    res.write(`<html><head><meta charset="utf-8"></head><body>`);
-    res.write(`<h1>📻 플레이리스트 생성 중...</h1>`);
-    res.write(`<p>프로그램: ${programName}</p>`);
-    res.write(`<p>날짜 범위: ${startDate} ~ ${endDate}</p>`);
-    res.write(`<p>잠시 기다려주세요...</p>`);
+    res.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Radio Playlist</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
+  header { padding: 24px 32px; border-bottom: 1px solid #eee; background: white; }
+  .logo { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: #999; }
+  main { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
+  h2 { font-size: 20px; font-weight: 400; margin-bottom: 24px; }
+  p { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 8px; }
+  .back { display: inline-block; margin-top: 32px; font-size: 13px; color: #999; text-decoration: none; }
+  .back:hover { color: #1a1a1a; }
+</style></head><body>
+<header><div class="logo">Radio Playlist</div></header>
+<main>
+<h2>플레이리스트 생성 중...</h2>
+<p>프로그램: ${programName}</p>
+<p>날짜: ${startDate} ~ ${endDate}</p>
+<p style="color:#bbb; margin-top:16px">잠시 기다려주세요...</p>`);
 
     const dates = getDateRange(startDate, endDate);
     const allTracks = [];
@@ -302,17 +348,12 @@ app.get('/create', async (req, res) => {
     for (const date of dates) {
       try {
         const tracks = await getTracksForDate(program, date);
-        if (tracks.length > 0) {
-          allTracks.push(...tracks);
-          foundDates.push(date);
-        }
-      } catch(e) {
-        continue;
-      }
+        if (tracks.length > 0) { allTracks.push(...tracks); foundDates.push(date); }
+      } catch(e) { continue; }
     }
 
     if (allTracks.length === 0) {
-      res.end(`<p>❌ 해당 기간의 선곡표를 찾을 수 없어요.</p><a href="/">돌아가기</a></body></html>`);
+      res.end(`<p style="color:#e57373; margin-top:24px">선곡표를 찾을 수 없어요.</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
       return;
     }
 
@@ -344,20 +385,20 @@ app.get('/create', async (req, res) => {
       );
     }
 
-    res.write(`<h2>✅ 완료!</h2>`);
-    res.write(`<p>플레이리스트 <b>${playlistName} (${startDate}~${endDate})</b> 생성됐어요!</p>`);
-    res.write(`<p>선곡표 찾은 날짜: ${foundDates.join(', ')}</p>`);
-    res.write(`<p>총 곡 수: ${unique.length}곡 / 추가된 곡: ${uris.length}곡</p>`);
+    res.write(`<h2 style="margin-top:32px">✓ 완료</h2>`);
+    res.write(`<p style="margin-top:16px"><b>${playlistName} (${startDate}~${endDate})</b></p>`);
+    res.write(`<p>찾은 날짜: ${foundDates.join(', ')}</p>`);
+    res.write(`<p>추가된 곡: ${uris.length} / ${unique.length}곡</p>`);
     if (notFound.length > 0) {
-      res.write(`<p>스포티파이에서 못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
+      res.write(`<p style="margin-top:16px; color:#bbb; font-size:13px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
     }
-    res.end(`<a href="/">돌아가기</a></body></html>`);
+    res.end(`<a href="/" class="back">← 돌아가기</a></main></body></html>`);
 
-  } catch (e) {
-    res.end(`<p>오류 발생: ${e.message}</p><a href="/">돌아가기</a></body></html>`);
+  } catch(e) {
+    res.end(`<p>오류: ${e.message}</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
   }
 });
 
 app.listen(process.env.PORT || PORT, '0.0.0.0', () => {
-  console.log(`서버 시작! 브라우저에서 http://127.0.0.1:8888 열어주세요`);
+  console.log(`서버 시작! http://127.0.0.1:8888`);
 });
