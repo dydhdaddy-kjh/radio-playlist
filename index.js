@@ -2,12 +2,14 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
 const app = express();
 const PORT = 8888;
 app.use(express.json());
+app.use('/fonts', express.static(path.join(__dirname, 'fonts')));
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -48,6 +50,52 @@ async function ensureValidToken() {
   return !!accessToken;
 }
 
+const FONT_CSS = `
+  @font-face {
+    font-family: 'DoHee';
+    src: url('/fonts/쫑알공주_도희체_v20.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+`;
+
+const BASE_STYLE = `
+  ${FONT_CSS}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DoHee', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 18px; background: #141414; color: #e8e8e8; min-height: 100vh; }
+  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
+  .logo { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: #555; }
+  .status { font-size: 15px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
+  .status::before { content: ''; width: 6px; height: 6px; background: #4caf50; border-radius: 50%; display: inline-block; }
+  main { max-width: 600px; margin: 0 auto; padding: 40px 24px; }
+  .tabs { display: flex; gap: 0; margin-bottom: 36px; border-bottom: 1px solid #222; }
+  .tab { padding: 12px 24px; font-size: 17px; font-family: 'DoHee', sans-serif; cursor: pointer; color: #555; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab.active { color: #e8e8e8; border-bottom-color: #e8e8e8; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .field { margin-bottom: 20px; }
+  label { display: block; font-size: 15px; letter-spacing: 1px; color: #555; margin-bottom: 8px; }
+  select, input[type=text], input[type=date] { width: 100%; padding: 13px 14px; border: 1px solid #222; border-radius: 6px; font-size: 17px; font-family: 'DoHee', sans-serif; background: #1e1e1e; color: #e8e8e8; outline: none; transition: border-color 0.2s; }
+  select:focus, input:focus { border-color: #444; }
+  select option { background: #1e1e1e; }
+  textarea { width: 100%; padding: 13px 14px; border: 1px solid #222; border-radius: 6px; font-size: 16px; font-family: monospace; background: #1e1e1e; color: #e8e8e8; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
+  textarea:focus { border-color: #444; }
+  .hint { font-size: 14px; color: #444; margin-top: 6px; }
+  .btn { width: 100%; padding: 14px; background: #e8e8e8; color: #141414; border: none; border-radius: 6px; font-size: 17px; font-family: 'DoHee', sans-serif; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
+  .btn:hover { opacity: 0.75; }
+  #aiResult { margin-top: 24px; padding: 20px; background: #1e1e1e; border-radius: 6px; border: 1px solid #222; font-size: 16px; line-height: 1.9; display: none; color: #aaa; }
+  #aiResult.show { display: block; }
+  .back { display: inline-block; margin-top: 32px; font-size: 16px; color: #444; text-decoration: none; }
+  .back:hover { color: #e8e8e8; }
+  @media (max-width: 480px) {
+    body { font-size: 19px; }
+    main { padding: 32px 16px; }
+    .tab { font-size: 18px; padding: 10px 18px; }
+    select, input[type=text], input[type=date] { font-size: 18px; padding: 14px; }
+    .btn { font-size: 18px; padding: 15px; }
+  }
+`;
+
 app.get('/login', (req, res) => {
   const scope = 'playlist-modify-public playlist-modify-private';
   const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
@@ -77,20 +125,21 @@ app.get('/', (req, res) => {
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Radio Playlist</title>
 <style>
+  ${FONT_CSS}
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-  .login-box { text-align: center; padding: 48px; }
-  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; margin-bottom: 32px; }
-  h1 { font-size: 26px; font-weight: 300; color: #e8e8e8; margin-bottom: 8px; letter-spacing: -0.5px; }
-  p { color: #555; font-size: 14px; margin-bottom: 40px; }
-  .btn { display: inline-block; padding: 14px 36px; background: #e8e8e8; color: #141414; text-decoration: none; border-radius: 100px; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s; }
+  body { font-family: 'DoHee', sans-serif; background: #141414; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .login-box { text-align: center; padding: 48px 32px; }
+  .logo { font-size: 17px; letter-spacing: 4px; color: #555; margin-bottom: 32px; }
+  h1 { font-size: 26px; font-weight: normal; color: #e8e8e8; margin-bottom: 10px; }
+  p { color: #555; font-size: 17px; margin-bottom: 40px; line-height: 1.7; }
+  .btn { display: inline-block; padding: 14px 36px; background: #e8e8e8; color: #141414; text-decoration: none; border-radius: 100px; font-size: 17px; font-family: 'DoHee', sans-serif; transition: opacity 0.2s; }
   .btn:hover { opacity: 0.75; }
 </style></head>
 <body>
   <div class="login-box">
     <div class="logo">Radio Playlist</div>
     <h1>나만의 라디오 플레이리스트</h1>
-    <p>CBS 선곡표와 AI 추천으로 스포티파이 플리를 만들어요</p>
+    <p>CBS 선곡표와 AI 추천으로<br>스포티파이 플리를 만들어요</p>
     <a href="/login" class="btn">Spotify로 시작하기</a>
   </div>
 </body></html>`);
@@ -103,32 +152,7 @@ app.get('/', (req, res) => {
   res.send(`<!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Radio Playlist</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; color: #e8e8e8; min-height: 100vh; }
-  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
-  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; }
-  .status { font-size: 12px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
-  .status::before { content: ''; width: 6px; height: 6px; background: #4caf50; border-radius: 50%; display: inline-block; }
-  main { max-width: 600px; margin: 0 auto; padding: 48px 24px; }
-  .tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid #222; }
-  .tab { padding: 12px 24px; font-size: 13px; cursor: pointer; color: #555; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; letter-spacing: 0.5px; }
-  .tab.active { color: #e8e8e8; border-bottom-color: #e8e8e8; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .field { margin-bottom: 20px; }
-  label { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 8px; }
-  select, input[type=text], input[type=date] { width: 100%; padding: 12px 14px; border: 1px solid #222; border-radius: 6px; font-size: 14px; background: #1e1e1e; color: #e8e8e8; outline: none; transition: border-color 0.2s; }
-  select:focus, input:focus { border-color: #444; }
-  select option { background: #1e1e1e; }
-  textarea { width: 100%; padding: 12px 14px; border: 1px solid #222; border-radius: 6px; font-size: 13px; font-family: monospace; background: #1e1e1e; color: #e8e8e8; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
-  textarea:focus { border-color: #444; }
-  .hint { font-size: 12px; color: #444; margin-top: 6px; }
-  .btn { width: 100%; padding: 13px; background: #e8e8e8; color: #141414; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s; margin-top: 8px; }
-  .btn:hover { opacity: 0.75; }
-  #aiResult { margin-top: 24px; padding: 20px; background: #1e1e1e; border-radius: 6px; border: 1px solid #222; font-size: 14px; line-height: 1.8; display: none; color: #aaa; }
-  #aiResult.show { display: block; }
-</style></head>
+<style>${BASE_STYLE}</style></head>
 <body>
 <header>
   <div class="logo">Radio Playlist</div>
@@ -165,7 +189,7 @@ app.get('/', (req, res) => {
   <div id="ai" class="tab-content">
     <div class="field">
       <label>곡 목록</label>
-      <textarea id="trackList" placeholder="곡명 - 아티스트 형식으로 한 줄씩&#10;&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck&#10;Autumn Leaves - Bill Evans"></textarea>
+      <textarea id="trackList" placeholder="곡명 - 아티스트 형식으로 한 줄씩&#10;&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck"></textarea>
       <div class="hint">Claude가 추천한 곡 목록을 붙여넣으세요</div>
     </div>
     <div class="field">
@@ -324,22 +348,12 @@ app.get('/create', async (req, res) => {
 
   try {
     res.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Radio Playlist</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; color: #e8e8e8; min-height: 100vh; }
-  header { padding: 20px 32px; border-bottom: 1px solid #222; }
-  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; }
-  main { max-width: 600px; margin: 0 auto; padding: 48px 24px; }
-  h2 { font-size: 18px; font-weight: 400; margin-bottom: 20px; color: #e8e8e8; }
-  p { font-size: 14px; color: #555; line-height: 1.8; }
-  .back { display: inline-block; margin-top: 32px; font-size: 13px; color: #444; text-decoration: none; }
-  .back:hover { color: #e8e8e8; }
-</style></head><body>
+<style>${BASE_STYLE}</style></head><body>
 <header><div class="logo">Radio Playlist</div></header>
 <main>
-<h2>플레이리스트 생성 중</h2>
-<p>${programName}</p>
-<p>${startDate} ~ ${endDate}</p>
+<h2 style="font-size:20px; font-weight:normal; margin-bottom:20px;">플레이리스트 생성 중</h2>
+<p style="color:#aaa">${programName}</p>
+<p style="color:#555">${startDate} ~ ${endDate}</p>
 <p style="margin-top:20px; color:#333">잠시 기다려주세요...</p>`);
 
     const dates = getDateRange(startDate, endDate);
@@ -386,11 +400,11 @@ app.get('/create', async (req, res) => {
       );
     }
 
-    res.write(`<h2 style="margin-top:32px">✓ 완료</h2>`);
+    res.write(`<h2 style="font-size:20px; font-weight:normal; margin-top:32px;">✓ 완료</h2>`);
     res.write(`<p style="margin-top:12px; color:#aaa"><b style="color:#e8e8e8">${playlistName}</b> (${startDate}~${endDate})</p>`);
-    res.write(`<p>추가된 곡: ${uris.length} / ${unique.length}곡</p>`);
+    res.write(`<p style="color:#555">추가된 곡: ${uris.length} / ${unique.length}곡</p>`);
     if (notFound.length > 0) {
-      res.write(`<p style="margin-top:16px; color:#333; font-size:13px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
+      res.write(`<p style="margin-top:16px; color:#333; font-size:15px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
     }
     res.end(`<a href="/" class="back">← 돌아가기</a></main></body></html>`);
 
