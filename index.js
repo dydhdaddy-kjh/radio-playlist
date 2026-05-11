@@ -234,6 +234,6 @@ app.get('/create', async (req, res) => {
   }
 });
 
-app.listen(PORT, '127.0.0.1', () => {
+app.listen(process.env.PORT || PORT, '0.0.0.0', () => {
   console.log(`서버 시작! 브라우저에서 http://127.0.0.1:8888 열어주세요`);
 });
