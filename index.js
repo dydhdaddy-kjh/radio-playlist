@@ -78,12 +78,12 @@ app.get('/', (req, res) => {
 <title>Radio Playlist</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
   .login-box { text-align: center; padding: 48px; }
-  .logo { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #999; margin-bottom: 32px; }
-  h1 { font-size: 28px; font-weight: 300; color: #1a1a1a; margin-bottom: 8px; letter-spacing: -0.5px; }
-  p { color: #999; font-size: 14px; margin-bottom: 40px; }
-  .btn { display: inline-block; padding: 14px 36px; background: #1a1a1a; color: white; text-decoration: none; border-radius: 100px; font-size: 14px; letter-spacing: 0.5px; transition: opacity 0.2s; }
+  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; margin-bottom: 32px; }
+  h1 { font-size: 26px; font-weight: 300; color: #e8e8e8; margin-bottom: 8px; letter-spacing: -0.5px; }
+  p { color: #555; font-size: 14px; margin-bottom: 40px; }
+  .btn { display: inline-block; padding: 14px 36px; background: #e8e8e8; color: #141414; text-decoration: none; border-radius: 100px; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s; }
   .btn:hover { opacity: 0.75; }
 </style></head>
 <body>
@@ -105,27 +105,28 @@ app.get('/', (req, res) => {
 <title>Radio Playlist</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
-  header { padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; background: white; }
-  .logo { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: #999; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; color: #e8e8e8; min-height: 100vh; }
+  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
+  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; }
   .status { font-size: 12px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
   .status::before { content: ''; width: 6px; height: 6px; background: #4caf50; border-radius: 50%; display: inline-block; }
-  main { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
-  .tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid #eee; }
-  .tab { padding: 12px 24px; font-size: 14px; cursor: pointer; color: #999; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
-  .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+  main { max-width: 600px; margin: 0 auto; padding: 48px 24px; }
+  .tabs { display: flex; gap: 0; margin-bottom: 40px; border-bottom: 1px solid #222; }
+  .tab { padding: 12px 24px; font-size: 13px; cursor: pointer; color: #555; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; letter-spacing: 0.5px; }
+  .tab.active { color: #e8e8e8; border-bottom-color: #e8e8e8; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
-  .field { margin-bottom: 24px; }
-  label { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 8px; }
-  select, input[type=text], input[type=date] { width: 100%; padding: 12px 16px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 14px; background: white; color: #1a1a1a; outline: none; transition: border-color 0.2s; }
-  select:focus, input:focus { border-color: #1a1a1a; }
-  textarea { width: 100%; padding: 12px 16px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: monospace; background: white; color: #1a1a1a; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
-  textarea:focus { border-color: #1a1a1a; }
-  .hint { font-size: 12px; color: #bbb; margin-top: 6px; }
-  .btn { width: 100%; padding: 14px; background: #1a1a1a; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s; margin-top: 8px; }
+  .field { margin-bottom: 20px; }
+  label { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+  select, input[type=text], input[type=date] { width: 100%; padding: 12px 14px; border: 1px solid #222; border-radius: 6px; font-size: 14px; background: #1e1e1e; color: #e8e8e8; outline: none; transition: border-color 0.2s; }
+  select:focus, input:focus { border-color: #444; }
+  select option { background: #1e1e1e; }
+  textarea { width: 100%; padding: 12px 14px; border: 1px solid #222; border-radius: 6px; font-size: 13px; font-family: monospace; background: #1e1e1e; color: #e8e8e8; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
+  textarea:focus { border-color: #444; }
+  .hint { font-size: 12px; color: #444; margin-top: 6px; }
+  .btn { width: 100%; padding: 13px; background: #e8e8e8; color: #141414; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s; margin-top: 8px; }
   .btn:hover { opacity: 0.75; }
-  #aiResult { margin-top: 24px; padding: 20px; background: white; border-radius: 8px; border: 1px solid #e8e8e8; font-size: 14px; line-height: 1.8; display: none; }
+  #aiResult { margin-top: 24px; padding: 20px; background: #1e1e1e; border-radius: 6px; border: 1px solid #222; font-size: 14px; line-height: 1.8; display: none; color: #aaa; }
   #aiResult.show { display: block; }
 </style></head>
 <body>
@@ -164,7 +165,7 @@ app.get('/', (req, res) => {
   <div id="ai" class="tab-content">
     <div class="field">
       <label>곡 목록</label>
-      <textarea id="trackList" placeholder="곡명 - 아티스트 형식으로 한 줄씩 입력하세요&#10;&#10;예시:&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck&#10;Autumn Leaves - Bill Evans"></textarea>
+      <textarea id="trackList" placeholder="곡명 - 아티스트 형식으로 한 줄씩&#10;&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck&#10;Autumn Leaves - Bill Evans"></textarea>
       <div class="hint">Claude가 추천한 곡 목록을 붙여넣으세요</div>
     </div>
     <div class="field">
@@ -191,7 +192,7 @@ app.get('/', (req, res) => {
 
     const result = document.getElementById('aiResult');
     result.className = 'show';
-    result.innerHTML = '⏳ 플레이리스트 생성 중...';
+    result.innerHTML = '⏳ 생성 중...';
 
     const res = await fetch('/create-ai', {
       method: 'POST',
@@ -203,8 +204,8 @@ app.get('/', (req, res) => {
     if (data.error) {
       result.innerHTML = '❌ 오류: ' + data.error;
     } else {
-      result.innerHTML = '✅ <b>' + data.name + '</b> 생성 완료!<br>추가된 곡: ' + data.added + '곡' +
-        (data.notFound.length > 0 ? '<br><br>못 찾은 곡:<br>' + data.notFound.join('<br>') : '');
+      result.innerHTML = '✓ <b>' + data.name + '</b> 생성 완료<br>추가된 곡: ' + data.added + '곡' +
+        (data.notFound.length > 0 ? '<br><br><span style="color:#555">못 찾은 곡:<br>' + data.notFound.join('<br>') + '</span>' : '');
     }
   }
 </script>
@@ -318,28 +319,28 @@ app.get('/create', async (req, res) => {
 
   const valid = await ensureValidToken();
   if (!valid) {
-    return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><p>로그인이 필요해요. <a href="/login">로그인</a></p></body></html>`);
+    return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="background:#141414;color:#e8e8e8;font-family:sans-serif;padding:40px"><p>로그인이 필요해요. <a href="/login" style="color:#e8e8e8">로그인</a></p></body></html>`);
   }
 
   try {
     res.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Radio Playlist</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
-  header { padding: 24px 32px; border-bottom: 1px solid #eee; background: white; }
-  .logo { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: #999; }
-  main { max-width: 640px; margin: 0 auto; padding: 48px 24px; }
-  h2 { font-size: 20px; font-weight: 400; margin-bottom: 24px; }
-  p { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 8px; }
-  .back { display: inline-block; margin-top: 32px; font-size: 13px; color: #999; text-decoration: none; }
-  .back:hover { color: #1a1a1a; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #141414; color: #e8e8e8; min-height: 100vh; }
+  header { padding: 20px 32px; border-bottom: 1px solid #222; }
+  .logo { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #555; }
+  main { max-width: 600px; margin: 0 auto; padding: 48px 24px; }
+  h2 { font-size: 18px; font-weight: 400; margin-bottom: 20px; color: #e8e8e8; }
+  p { font-size: 14px; color: #555; line-height: 1.8; }
+  .back { display: inline-block; margin-top: 32px; font-size: 13px; color: #444; text-decoration: none; }
+  .back:hover { color: #e8e8e8; }
 </style></head><body>
 <header><div class="logo">Radio Playlist</div></header>
 <main>
-<h2>플레이리스트 생성 중...</h2>
-<p>프로그램: ${programName}</p>
-<p>날짜: ${startDate} ~ ${endDate}</p>
-<p style="color:#bbb; margin-top:16px">잠시 기다려주세요...</p>`);
+<h2>플레이리스트 생성 중</h2>
+<p>${programName}</p>
+<p>${startDate} ~ ${endDate}</p>
+<p style="margin-top:20px; color:#333">잠시 기다려주세요...</p>`);
 
     const dates = getDateRange(startDate, endDate);
     const allTracks = [];
@@ -353,7 +354,7 @@ app.get('/create', async (req, res) => {
     }
 
     if (allTracks.length === 0) {
-      res.end(`<p style="color:#e57373; margin-top:24px">선곡표를 찾을 수 없어요.</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
+      res.end(`<p style="color:#555; margin-top:24px">선곡표를 찾을 수 없어요.</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
       return;
     }
 
@@ -386,16 +387,15 @@ app.get('/create', async (req, res) => {
     }
 
     res.write(`<h2 style="margin-top:32px">✓ 완료</h2>`);
-    res.write(`<p style="margin-top:16px"><b>${playlistName} (${startDate}~${endDate})</b></p>`);
-    res.write(`<p>찾은 날짜: ${foundDates.join(', ')}</p>`);
+    res.write(`<p style="margin-top:12px; color:#aaa"><b style="color:#e8e8e8">${playlistName}</b> (${startDate}~${endDate})</p>`);
     res.write(`<p>추가된 곡: ${uris.length} / ${unique.length}곡</p>`);
     if (notFound.length > 0) {
-      res.write(`<p style="margin-top:16px; color:#bbb; font-size:13px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
+      res.write(`<p style="margin-top:16px; color:#333; font-size:13px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
     }
     res.end(`<a href="/" class="back">← 돌아가기</a></main></body></html>`);
 
   } catch(e) {
-    res.end(`<p>오류: ${e.message}</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
+    res.end(`<p style="color:#555">오류: ${e.message}</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
   }
 });
 
