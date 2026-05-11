@@ -7,6 +7,7 @@ dotenv.config();
 
 const app = express();
 const PORT = 8888;
+app.use(express.json());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -16,7 +17,6 @@ let accessToken = null;
 let refreshToken = null;
 let tokenExpiry = null;
 
-// CBS 프로그램 목록
 const PROGRAMS = {
   'cbs_P000218': '그대와 여는 아침 (김용신)',
   'cbs_P000219': '한동준의 FM POPS',
@@ -25,7 +25,10 @@ const PROGRAMS = {
   'cbs_P000223': '박승화의 가요속으로',
 };
 
-// 토큰 자동 갱신
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function refreshAccessToken() {
   try {
     const response = await axios.post('https://accounts.spotify.com/api/token',
@@ -87,22 +90,83 @@ app.get('/', (req, res) => {
     .join('');
 
   res.send(`
-    <html><head><meta charset="utf-8"></head><body>
-    <h1>📻 CBS 라디오 플레이리스트 생성기</h1>
+    <html><head><meta charset="utf-8">
+    <style>
+      body { font-family: sans-serif; padding: 20px; }
+      .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+      .tab { padding: 8px 20px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5; }
+      .tab.active { background: #1db954; color: white; border-color: #1db954; }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; }
+      textarea { width: 500px; height: 200px; font-family: monospace; font-size: 13px; }
+      input[type=text], select { width: 300px; padding: 4px; }
+      button { padding: 8px 20px; background: #1db954; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    </style>
+    </head><body>
+    <h1>📻 라디오 플레이리스트 생성기</h1>
     <p style="color:green">✅ 스포티파이 연결됨 (자동 갱신 활성화)</p>
-    <form action="/create" method="get">
-      <label>프로그램 선택:</label><br>
-      <select name="program" style="width:300px; padding:4px; margin-bottom:12px">
-        ${programOptions}
-      </select><br><br>
-      <label>시작 날짜:</label><br>
-      <input type="date" name="startDate" required><br><br>
-      <label>종료 날짜:</label><br>
-      <input type="date" name="endDate" required><br><br>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('cbs')">📻 CBS 선곡표</div>
+      <div class="tab" onclick="showTab('ai')">🎵 AI 추천 플리</div>
+    </div>
+
+    <div id="cbs" class="tab-content active">
+      <form action="/create" method="get">
+        <label>프로그램 선택:</label><br>
+        <select name="program">${programOptions}</select><br><br>
+        <label>시작 날짜:</label><br>
+        <input type="date" name="startDate" required><br><br>
+        <label>종료 날짜:</label><br>
+        <input type="date" name="endDate" required><br><br>
+        <label>플레이리스트 이름:</label><br>
+        <input type="text" name="name" style="width:300px"><br><br>
+        <button type="submit">플레이리스트 생성</button>
+      </form>
+    </div>
+
+    <div id="ai" class="tab-content">
+      <p>Claude가 추천한 곡 목록을 아래에 붙여넣으세요.<br>
+      <small>형식: 한 줄에 하나씩 <b>곡명 - 아티스트</b> 또는 <b>아티스트 - 곡명</b></small></p>
+      <textarea id="trackList" placeholder="예시:&#10;Becaus - Dave Brubeck&#10;So What - Miles Davis&#10;Take Five - Dave Brubeck"></textarea><br><br>
       <label>플레이리스트 이름:</label><br>
-      <input type="text" name="name" style="width:300px"><br><br>
-      <button type="submit">플레이리스트 생성</button>
-    </form>
+      <input type="text" id="aiPlaylistName" style="width:300px" placeholder="플레이리스트 이름 입력"><br><br>
+      <button onclick="createAiPlaylist()">플레이리스트 생성</button>
+      <div id="aiResult" style="margin-top:20px"></div>
+    </div>
+
+    <script>
+      function showTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      async function createAiPlaylist() {
+        const text = document.getElementById('trackList').value.trim();
+        const name = document.getElementById('aiPlaylistName').value.trim() || 'AI 추천 플리';
+        if (!text) { alert('곡 목록을 입력해주세요!'); return; }
+
+        document.getElementById('aiResult').innerHTML = '⏳ 플레이리스트 생성 중...';
+
+        const response = await fetch('/create-ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trackList: text, name })
+        });
+        const result = await response.json();
+
+        if (result.error) {
+          document.getElementById('aiResult').innerHTML = '❌ 오류: ' + result.error;
+        } else {
+          document.getElementById('aiResult').innerHTML =
+            '✅ 완료! 플레이리스트 <b>' + result.name + '</b> 생성됐어요!<br>' +
+            '추가된 곡: ' + result.added + '곡<br>' +
+            (result.notFound.length > 0 ? '못 찾은 곡:<br>' + result.notFound.join('<br>') : '');
+        }
+      }
+    </script>
     </body></html>
   `);
 });
@@ -127,16 +191,22 @@ async function getTracksForDate(programCode, date) {
   $('ul li').each((i, el) => {
     const img = $(el).find('img');
     const title = img.attr('alt') || '';
-    const time = $(el).find('span').first().text().trim();
-    const spans = $(el).find('span');
+    if (!title || title.includes('배너') || title.includes('banner')) return;
+
     let artist = '';
-    spans.each((j, span) => {
-      const t = $(span).text().trim();
-      if (t && t !== time && t !== title) artist = t;
-    });
-    if (title && !title.includes('배너') && !title.includes('banner')) {
-      tracks.push({ title, artist });
+    const liText = $(el).text().trim();
+    const lines = liText.split('\n').map(l => l.trim()).filter(l => l);
+
+    for (const line of lines) {
+      if (line === title) continue;
+      if (/^\d{2}:\d{2}/.test(line)) continue;
+      if (/^\d+$/.test(line)) continue;
+      if (line.includes('배너')) continue;
+      artist = line;
+      break;
     }
+
+    tracks.push({ title, artist });
   });
   return tracks;
 }
@@ -150,9 +220,62 @@ async function searchTrack(title, artist) {
     const items = res.data.tracks.items;
     return items.length > 0 ? items[0].uri : null;
   } catch(e) {
+    if (e.response && e.response.status === 429) {
+      const retryAfter = (e.response.headers['retry-after'] || 3) * 1000;
+      console.log(`Rate limit! ${retryAfter/1000}초 후 재시도...`);
+      await sleep(retryAfter);
+      return searchTrack(title, artist);
+    }
     return null;
   }
 }
+
+// AI 추천 플리 생성 엔드포인트
+app.post('/create-ai', async (req, res) => {
+  const { trackList, name } = req.body;
+
+  const valid = await ensureValidToken();
+  if (!valid) {
+    return res.json({ error: '로그인이 필요해요' });
+  }
+
+  try {
+    // 곡 목록 파싱 (곡명 - 아티스트 또는 아티스트 - 곡명)
+    const lines = trackList.split('\n').map(l => l.trim()).filter(l => l && l.includes('-'));
+    const tracks = lines.map(line => {
+      const parts = line.split('-').map(p => p.trim());
+      return { title: parts[0], artist: parts[1] || '' };
+    });
+
+    const uris = [];
+    const notFound = [];
+    for (const track of tracks) {
+      await ensureValidToken();
+      const uri = await searchTrack(track.title, track.artist);
+      if (uri) uris.push(uri);
+      else notFound.push(`${track.title} - ${track.artist}`);
+      await sleep(200);
+    }
+
+    const plRes = await axios.post('https://api.spotify.com/v1/me/playlists',
+      { name, public: true },
+      { headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+    );
+    const playlistId = plRes.data.id;
+
+    for (let i = 0; i < uris.length; i += 100) {
+      await axios.post(`https://api.spotify.com/v1/playlists/${playlistId}/items`,
+        { uris: uris.slice(i, i + 100) },
+        { headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    res.json({ name, added: uris.length, notFound });
+
+  } catch(e) {
+    res.json({ error: e.message });
+  }
+});
 
 app.get('/create', async (req, res) => {
   const { program, startDate, endDate, name } = req.query;
@@ -204,6 +327,7 @@ app.get('/create', async (req, res) => {
       const uri = await searchTrack(track.title, track.artist);
       if (uri) uris.push(uri);
       else notFound.push(`${track.title} - ${track.artist}`);
+      await sleep(200);
     }
 
     await ensureValidToken();
