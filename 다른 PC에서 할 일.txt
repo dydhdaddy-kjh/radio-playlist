@@ -1,0 +1,60 @@
+다른 PC에서 할 일은 딱 두 가지예요:
+
+1. Node.js 설치 (nodejs.org에서 LTS), https://nodejs.org/en, 접속하셔서 LTS 버튼 눌러서 다운로드하시면 돼요
+2. 폴더 안에서 cmd로 아래 한 줄 실행: 
+npm install
+(cmd 창은, 윈도우 키+R 누르면 나옴)
+
+그러면 끝이에요! 그 다음부터는 평소처럼 node index_XXX.js 하면 돼요
+
+네 맞아요! node_modules는 복사 안 해도 돼요.
+npm install 한 줄이 그 폴더를 자동으로 새로 만들어주거든요.
+그러니까 다른 PC로 옮길 때는 이것만 복사하면 돼요:
+
+.env
+index_그대와.js
+index_fmpops.js
+index_행복한동행.js
+기타 index 파일들
+package.json
+
+
+Node.js 설치 (nodejs.org에서 LTS), 이게 해당 피시, 노트북에 서버(?) 만드는 거야?
+
+오후 4:18
+Claude 응답: 아니요, 서버를 만드는 게 아니에요 😊
+아니요, 서버를 만드는 게 아니에요 😊
+
+Node.js는 그냥 실행 엔진이에요. 쉽게 말하면 index.js 파일을 읽고 실행할 수 있게 해주는 프로그램이에요. 마치 Word 파일을 열려면 MS Word가 설치돼 있어야 하는 것처럼, .js 파일을 실행하려면 Node.js가 필요한 거예요.
+
+서버는 node index.js 명령어를 입력했을 때 그때그때 만들어지는 거고, cmd 창 닫거나 Ctrl+C 누르면 없어져요.
+
+
+★정리하면★
+1. Node.js 설치 (https://nodejs.org/en, LTS 버튼)
+
+2. cmd 창 열고:
+cd radio-playlist
+npm install (한 번 실행하면 그 다음부턴 건너뜀)
+
+3. node index.js 실행 (이 파일은 프로그램 통합임)
+
+4. 브라우저에서 http://127.0.0.1:8888 접속
+
+이게 다른 PC에서 처음 할 때 순서예요 😊
+그 다음부터는 3번, 4번만 하면 되고요!
+
+
+그렇게 하면 node_modules는 알아서 생긴다는 거네
+
+오후 4:24
+Claude 응답: 네 맞아요!
+네 맞아요! npm install 이 명령어 하나가 package.json을 보고 필요한 패키지들을 자동으로 다운받아서 node_modules 폴더를 만들어줘요
+
+
+서버 끌 때, cmd 창에서, 컨트럴+C
+
+브라우저(127...)에서 시간 지나면 연결 자동 해지, cmd 창에서 서버 껐다가 다시 들어가야 함(3~4번)
+
+cmd 창에서, 파일 열 때는 'notepad 파일 이름'(파일 탐색기에서 연결 프로그램-메모장으로 열 수도 있음
+파일 실행할 때는 'node 파일 이름'
