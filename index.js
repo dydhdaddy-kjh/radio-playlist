@@ -53,7 +53,7 @@ async function ensureValidToken() {
 const FONT_CSS = `
   @font-face {
     font-family: 'DoHee';
-    src: url('/fonts/쫑알공주_도희체_v20.ttf') format('truetype');
+    src: url('/fonts/dohee.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
   }
