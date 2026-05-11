@@ -16,6 +16,7 @@ let accessToken = null;
 let refreshToken = null;
 let tokenExpiry = null;
 
+// CBS 프로그램 목록
 const PROGRAMS = {
   'cbs_P000218': '그대와 여는 아침 (김용신)',
   'cbs_P000219': '한동준의 FM POPS',
@@ -24,10 +25,7 @@ const PROGRAMS = {
   'cbs_P000223': '박승화의 가요속으로',
 };
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
+// 토큰 자동 갱신
 async function refreshAccessToken() {
   try {
     const response = await axios.post('https://accounts.spotify.com/api/token',
@@ -129,22 +127,16 @@ async function getTracksForDate(programCode, date) {
   $('ul li').each((i, el) => {
     const img = $(el).find('img');
     const title = img.attr('alt') || '';
-    if (!title || title.includes('배너') || title.includes('banner')) return;
-
+    const time = $(el).find('span').first().text().trim();
+    const spans = $(el).find('span');
     let artist = '';
-    const liText = $(el).text().trim();
-    const lines = liText.split('\n').map(l => l.trim()).filter(l => l);
-
-    for (const line of lines) {
-      if (line === title) continue;
-      if (/^\d{2}:\d{2}/.test(line)) continue;
-      if (/^\d+$/.test(line)) continue;
-      if (line.includes('배너')) continue;
-      artist = line;
-      break;
+    spans.each((j, span) => {
+      const t = $(span).text().trim();
+      if (t && t !== time && t !== title) artist = t;
+    });
+    if (title && !title.includes('배너') && !title.includes('banner')) {
+      tracks.push({ title, artist });
     }
-
-    tracks.push({ title, artist });
   });
   return tracks;
 }
@@ -158,12 +150,6 @@ async function searchTrack(title, artist) {
     const items = res.data.tracks.items;
     return items.length > 0 ? items[0].uri : null;
   } catch(e) {
-    if (e.response && e.response.status === 429) {
-      const retryAfter = (e.response.headers['retry-after'] || 3) * 1000;
-      console.log(`Rate limit! ${retryAfter/1000}초 후 재시도...`);
-      await sleep(retryAfter);
-      return searchTrack(title, artist);
-    }
     return null;
   }
 }
@@ -218,7 +204,6 @@ app.get('/create', async (req, res) => {
       const uri = await searchTrack(track.title, track.artist);
       if (uri) uris.push(uri);
       else notFound.push(`${track.title} - ${track.artist}`);
-      await sleep(200);
     }
 
     await ensureValidToken();
