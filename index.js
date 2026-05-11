@@ -62,38 +62,97 @@ const FONT_CSS = `
 const BASE_STYLE = `
   ${FONT_CSS}
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'DoHee', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 18px; background: #141414; color: #e8e8e8; min-height: 100vh; }
-  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
-  .logo { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: #555; }
-  .status { font-size: 15px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
+  body { font-family: 'DoHee', -apple-system, sans-serif; font-size: 19px; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+  body.dark { background: #141414; color: #f4a7b9; }
+  body.light { background: #fde8ef; color: #3a2030; }
+
+  header { padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+  body.dark header { border-bottom: 1px solid #2a2a2a; }
+  body.light header { border-bottom: 1px solid #f0c0d0; }
+
+  .logo { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; }
+  body.dark .logo { color: #c47a8a; }
+  body.light .logo { color: #b06070; }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .status { font-size: 14px; color: #4caf50; display: flex; align-items: center; gap: 6px; }
   .status::before { content: ''; width: 6px; height: 6px; background: #4caf50; border-radius: 50%; display: inline-block; }
+
+  .theme-btn { padding: 6px 14px; border-radius: 100px; font-size: 14px; font-family: 'DoHee', sans-serif; cursor: pointer; border: none; transition: all 0.3s; }
+  body.dark .theme-btn { background: #2a2a2a; color: #f4a7b9; }
+  body.light .theme-btn { background: #f0c0d0; color: #3a2030; }
+  .theme-btn:hover { opacity: 0.75; }
+
   main { max-width: 600px; margin: 0 auto; padding: 40px 24px; }
-  .tabs { display: flex; gap: 0; margin-bottom: 36px; border-bottom: 1px solid #222; }
-  .tab { padding: 12px 24px; font-size: 17px; font-family: 'DoHee', sans-serif; cursor: pointer; color: #555; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
-  .tab.active { color: #e8e8e8; border-bottom-color: #e8e8e8; }
+  .tabs { display: flex; margin-bottom: 36px; }
+  body.dark .tabs { border-bottom: 1px solid #2a2a2a; }
+  body.light .tabs { border-bottom: 1px solid #f0c0d0; }
+
+  .tab { padding: 12px 24px; font-size: 18px; font-family: 'DoHee', sans-serif; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  body.dark .tab { color: #7a5060; }
+  body.dark .tab.active { color: #f4a7b9; border-bottom-color: #f4a7b9; }
+  body.light .tab { color: #c090a0; }
+  body.light .tab.active { color: #3a2030; border-bottom-color: #3a2030; }
+
   .tab-content { display: none; }
   .tab-content.active { display: block; }
   .field { margin-bottom: 20px; }
-  label { display: block; font-size: 15px; letter-spacing: 1px; color: #555; margin-bottom: 8px; }
-  select, input[type=text], input[type=date] { width: 100%; padding: 13px 14px; border: 1px solid #222; border-radius: 6px; font-size: 17px; font-family: 'DoHee', sans-serif; background: #1e1e1e; color: #e8e8e8; outline: none; transition: border-color 0.2s; }
-  select:focus, input:focus { border-color: #444; }
-  select option { background: #1e1e1e; }
-  textarea { width: 100%; padding: 13px 14px; border: 1px solid #222; border-radius: 6px; font-size: 16px; font-family: monospace; background: #1e1e1e; color: #e8e8e8; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
-  textarea:focus { border-color: #444; }
-  .hint { font-size: 14px; color: #444; margin-top: 6px; }
-  .btn { width: 100%; padding: 14px; background: #e8e8e8; color: #141414; border: none; border-radius: 6px; font-size: 17px; font-family: 'DoHee', sans-serif; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
+  label { display: block; font-size: 15px; margin-bottom: 8px; }
+  body.dark label { color: #c47a8a; }
+  body.light label { color: #906070; }
+
+  select, input[type=text], input[type=date] { width: 100%; padding: 13px 14px; border-radius: 6px; font-size: 18px; font-family: 'DoHee', sans-serif; outline: none; transition: border-color 0.2s; }
+  body.dark select, body.dark input { border: 1px solid #2a2a2a; background: #1e1414; color: #f4a7b9; }
+  body.dark select:focus, body.dark input:focus { border-color: #f4a7b9; }
+  body.light select, body.light input { border: 1px solid #f0c0d0; background: #fff0f4; color: #3a2030; }
+  body.light select:focus, body.light input:focus { border-color: #c06080; }
+  select option { background: #1e1414; }
+
+  textarea { width: 100%; padding: 13px 14px; border-radius: 6px; font-size: 16px; font-family: monospace; outline: none; resize: vertical; min-height: 180px; transition: border-color 0.2s; }
+  body.dark textarea { border: 1px solid #2a2a2a; background: #1e1414; color: #f4a7b9; }
+  body.dark textarea:focus { border-color: #f4a7b9; }
+  body.light textarea { border: 1px solid #f0c0d0; background: #fff0f4; color: #3a2030; }
+  body.light textarea:focus { border-color: #c06080; }
+
+  .hint { font-size: 13px; margin-top: 6px; }
+  body.dark .hint { color: #5a3a4a; }
+  body.light .hint { color: #c090a0; }
+
+  .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; font-size: 18px; font-family: 'DoHee', sans-serif; cursor: pointer; transition: opacity 0.2s; margin-top: 8px; }
+  body.dark .btn { background: #f4a7b9; color: #141414; }
+  body.light .btn { background: #c06080; color: white; }
   .btn:hover { opacity: 0.75; }
-  #aiResult { margin-top: 24px; padding: 20px; background: #1e1e1e; border-radius: 6px; border: 1px solid #222; font-size: 16px; line-height: 1.9; display: none; color: #aaa; }
+
+  #aiResult { margin-top: 24px; padding: 20px; border-radius: 6px; font-size: 16px; line-height: 1.9; display: none; }
   #aiResult.show { display: block; }
-  .back { display: inline-block; margin-top: 32px; font-size: 16px; color: #444; text-decoration: none; }
-  .back:hover { color: #e8e8e8; }
+  body.dark #aiResult { background: #1e1414; border: 1px solid #2a2a2a; color: #c47a8a; }
+  body.light #aiResult { background: #fff0f4; border: 1px solid #f0c0d0; color: #906070; }
+
+  .back { display: inline-block; margin-top: 32px; font-size: 16px; text-decoration: none; }
+  body.dark .back { color: #5a3a4a; }
+  body.dark .back:hover { color: #f4a7b9; }
+  body.light .back { color: #c090a0; }
+  body.light .back:hover { color: #3a2030; }
+
   @media (max-width: 480px) {
-    body { font-size: 19px; }
+    body { font-size: 20px; }
     main { padding: 32px 16px; }
-    .tab { font-size: 18px; padding: 10px 18px; }
-    select, input[type=text], input[type=date] { font-size: 18px; padding: 14px; }
-    .btn { font-size: 18px; padding: 15px; }
+    .tab { font-size: 19px; padding: 10px 18px; }
+    select, input[type=text], input[type=date] { font-size: 19px; }
+    .btn { font-size: 19px; padding: 15px; }
   }
+`;
+
+const THEME_SCRIPT = `
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.body.className = saved;
+  function toggleTheme() {
+    const next = document.body.className === 'dark' ? 'light' : 'dark';
+    document.body.className = next;
+    localStorage.setItem('theme', next);
+    document.querySelector('.theme-btn').textContent = next === 'dark' ? '🌸 밝게' : '🌙 어둡게';
+  }
+  document.querySelector('.theme-btn').textContent = saved === 'dark' ? '🌸 밝게' : '🌙 어둡게';
 `;
 
 app.get('/login', (req, res) => {
@@ -129,10 +188,10 @@ app.get('/', (req, res) => {
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'DoHee', sans-serif; background: #141414; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
   .login-box { text-align: center; padding: 48px 32px; }
-  .logo { font-size: 17px; letter-spacing: 4px; color: #555; margin-bottom: 32px; }
-  h1 { font-size: 26px; font-weight: normal; color: #e8e8e8; margin-bottom: 10px; }
-  p { color: #555; font-size: 17px; margin-bottom: 40px; line-height: 1.7; }
-  .btn { display: inline-block; padding: 14px 36px; background: #e8e8e8; color: #141414; text-decoration: none; border-radius: 100px; font-size: 17px; font-family: 'DoHee', sans-serif; transition: opacity 0.2s; }
+  .logo { font-size: 17px; letter-spacing: 4px; color: #c47a8a; margin-bottom: 32px; }
+  h1 { font-size: 26px; font-weight: normal; color: #f4a7b9; margin-bottom: 10px; }
+  p { color: #7a5060; font-size: 18px; margin-bottom: 40px; line-height: 1.7; }
+  .btn { display: inline-block; padding: 14px 36px; background: #f4a7b9; color: #141414; text-decoration: none; border-radius: 100px; font-size: 18px; font-family: 'DoHee', sans-serif; transition: opacity 0.2s; }
   .btn:hover { opacity: 0.75; }
 </style></head>
 <body>
@@ -153,10 +212,13 @@ app.get('/', (req, res) => {
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Radio Playlist</title>
 <style>${BASE_STYLE}</style></head>
-<body>
+<body class="dark">
 <header>
   <div class="logo">Radio Playlist</div>
-  <div class="status">Spotify 연결됨</div>
+  <div class="header-right">
+    <div class="status">Spotify 연결됨</div>
+    <button class="theme-btn" onclick="toggleTheme()">🌸 밝게</button>
+  </div>
 </header>
 <main>
   <div class="tabs">
@@ -202,6 +264,8 @@ app.get('/', (req, res) => {
 </main>
 
 <script>
+  ${THEME_SCRIPT}
+
   function showTab(tab, el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -229,7 +293,7 @@ app.get('/', (req, res) => {
       result.innerHTML = '❌ 오류: ' + data.error;
     } else {
       result.innerHTML = '✓ <b>' + data.name + '</b> 생성 완료<br>추가된 곡: ' + data.added + '곡' +
-        (data.notFound.length > 0 ? '<br><br><span style="color:#555">못 찾은 곡:<br>' + data.notFound.join('<br>') + '</span>' : '');
+        (data.notFound.length > 0 ? '<br><br><span style="opacity:0.5">못 찾은 곡:<br>' + data.notFound.join('<br>') + '</span>' : '');
     }
   }
 </script>
@@ -343,18 +407,23 @@ app.get('/create', async (req, res) => {
 
   const valid = await ensureValidToken();
   if (!valid) {
-    return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="background:#141414;color:#e8e8e8;font-family:sans-serif;padding:40px"><p>로그인이 필요해요. <a href="/login" style="color:#e8e8e8">로그인</a></p></body></html>`);
+    return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="background:#141414;color:#f4a7b9;font-family:sans-serif;padding:40px"><p>로그인이 필요해요. <a href="/login" style="color:#f4a7b9">로그인</a></p></body></html>`);
   }
 
   try {
     res.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Radio Playlist</title>
-<style>${BASE_STYLE}</style></head><body>
-<header><div class="logo">Radio Playlist</div></header>
+<style>${BASE_STYLE}</style></head><body class="dark">
+<header>
+  <div class="logo">Radio Playlist</div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()">🌸 밝게</button>
+  </div>
+</header>
 <main>
-<h2 style="font-size:20px; font-weight:normal; margin-bottom:20px;">플레이리스트 생성 중</h2>
-<p style="color:#aaa">${programName}</p>
-<p style="color:#555">${startDate} ~ ${endDate}</p>
-<p style="margin-top:20px; color:#333">잠시 기다려주세요...</p>`);
+<p style="font-size:18px; opacity:0.5; margin-bottom:20px;">플레이리스트 생성 중</p>
+<p style="font-size:20px;">${programName}</p>
+<p style="opacity:0.5; margin-top:8px;">${startDate} ~ ${endDate}</p>
+<p style="margin-top:20px; opacity:0.3;">잠시 기다려주세요...</p>`);
 
     const dates = getDateRange(startDate, endDate);
     const allTracks = [];
@@ -368,7 +437,7 @@ app.get('/create', async (req, res) => {
     }
 
     if (allTracks.length === 0) {
-      res.end(`<p style="color:#555; margin-top:24px">선곡표를 찾을 수 없어요.</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
+      res.end(`<p style="opacity:0.5; margin-top:24px;">선곡표를 찾을 수 없어요.</p><a href="/" class="back">← 돌아가기</a></main><script>${THEME_SCRIPT}</script></body></html>`);
       return;
     }
 
@@ -400,16 +469,16 @@ app.get('/create', async (req, res) => {
       );
     }
 
-    res.write(`<h2 style="font-size:20px; font-weight:normal; margin-top:32px;">✓ 완료</h2>`);
-    res.write(`<p style="margin-top:12px; color:#aaa"><b style="color:#e8e8e8">${playlistName}</b> (${startDate}~${endDate})</p>`);
-    res.write(`<p style="color:#555">추가된 곡: ${uris.length} / ${unique.length}곡</p>`);
+    res.write(`<p style="font-size:22px; margin-top:32px;">✓ 완료</p>`);
+    res.write(`<p style="margin-top:12px; font-size:20px;">${playlistName}</p>`);
+    res.write(`<p style="opacity:0.5;">${startDate}~${endDate} · ${uris.length}곡 추가</p>`);
     if (notFound.length > 0) {
-      res.write(`<p style="margin-top:16px; color:#333; font-size:15px">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
+      res.write(`<p style="margin-top:16px; opacity:0.3; font-size:15px;">못 찾은 곡:<br>${notFound.join('<br>')}</p>`);
     }
-    res.end(`<a href="/" class="back">← 돌아가기</a></main></body></html>`);
+    res.end(`<a href="/" class="back">← 돌아가기</a></main><script>${THEME_SCRIPT}</script></body></html>`);
 
   } catch(e) {
-    res.end(`<p style="color:#555">오류: ${e.message}</p><a href="/" class="back">← 돌아가기</a></main></body></html>`);
+    res.end(`<p style="opacity:0.5;">오류: ${e.message}</p><a href="/" class="back">← 돌아가기</a></main><script>${THEME_SCRIPT}</script></body></html>`);
   }
 });
 
