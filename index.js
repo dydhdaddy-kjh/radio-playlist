@@ -83,6 +83,11 @@ const BASE_STYLE = `
   body.light .theme-btn { background: #f0c0d0; color: #3a2030; }
   .theme-btn:hover { opacity: 0.75; }
 
+  .logout-btn { padding: 6px 14px; border-radius: 100px; font-size: 14px; font-family: 'DoHee', sans-serif; cursor: pointer; border: none; transition: all 0.3s; }
+  body.dark .logout-btn { background: #2a2a2a; color: #7a5060; }
+  body.light .logout-btn { background: #f0c0d0; color: #906070; }
+  .logout-btn:hover { opacity: 0.75; }
+
   main { max-width: 600px; margin: 0 auto; padding: 40px 24px; }
   .tabs { display: flex; margin-bottom: 36px; }
   body.dark .tabs { border-bottom: 1px solid #2a2a2a; }
@@ -177,6 +182,13 @@ app.get('/callback', async (req, res) => {
   }
 });
 
+app.get('/logout', (req, res) => {
+  accessToken = null;
+  refreshToken = null;
+  tokenExpiry = null;
+  res.redirect('/');
+});
+
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   if (!accessToken) {
@@ -218,7 +230,7 @@ app.get('/', (req, res) => {
   <div class="header-right">
     <div class="status">Spotify 연결됨</div>
     <button class="theme-btn" onclick="toggleTheme()">🌸 밝게</button>
-    <button class="theme-btn" onclick="location.href='/logout'">로그아웃</button>
+    <a href="/logout" class="logout-btn">로그아웃</a>
   </div>
 </header>
 <main>
@@ -418,6 +430,7 @@ app.get('/create', async (req, res) => {
   <div class="logo">Radio Playlist</div>
   <div class="header-right">
     <button class="theme-btn" onclick="toggleTheme()">🌸 밝게</button>
+    <a href="/logout" class="logout-btn">로그아웃</a>
   </div>
 </header>
 <main>
