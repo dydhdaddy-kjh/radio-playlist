@@ -218,6 +218,7 @@ app.get('/', (req, res) => {
   <div class="header-right">
     <div class="status">Spotify 연결됨</div>
     <button class="theme-btn" onclick="toggleTheme()">🌸 밝게</button>
+    <button class="theme-btn" onclick="location.href='/logout'">로그아웃</button>
   </div>
 </header>
 <main>
